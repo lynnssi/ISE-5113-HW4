@@ -10,6 +10,7 @@ Evaluation Function::: knapsack weight. Negative values if it is greater than th
  Tabu Criterion: Whether an element at an index has been flipped
  Aspiration Criteria::  If a tabu solution encountered at the current iteration is better than the best solution found so far, then its tabu status is overridden 
  choice of tabu tenure:: 5
+ Stopping criterion: number of iterations...I would like to use something better
 
 """
 
