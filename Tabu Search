@@ -1,0 +1,116 @@
+"""
+Tabu Search
+
+Define the following for the search 
+
+Neighborhood::: Single-flip neighborhood
+Tabu Memory:::  Number of moves
+Selection of Candidate List::: From neighborhood that doesn't include tabu solutions
+Evaluation Function:::
+ Tabu Criterion: Whether an element in the index has been flipped
+ Aspiration Criteria::  If a tabu solution encountered at the current iteration is better than the best solution found so far, then its tabu status is overridden 
+ choice of tabu tenur:: 5
+
+"""
+
+import copy
+from random import Random
+import numpy as np
+
+seed = 12345
+myPRNG = Random(seed)
+
+#initialize variables for general knapsack problem
+values = []
+weights = []
+current = create_random_instance(values, weights)
+
+#initialize tabu search settings
+stopping_criterion = True
+tabu_tenure = 5
+memory = {}
+
+"""
+Initialize Knapsack problem
+Define standard functions for knapsack problem
+"""
+
+def create_random_instance(values, weights):
+    for i in xrange(0,n):
+        values.append(myPRNG.randint(10,100))
+        
+    for i in xrange(0,n):
+        weights.append(myPRNG.randint(5,15))
+    
+def calc_weight(x):
+    a=np.array(x)
+    c=np.array(weights)
+    totalWeight = np.dot(a,c)    #compute the weight value of the knapsack selection
+    return totalWeight
+
+def evaluate(x):
+          
+    a=np.array(x)
+    b=np.array(values)
+    
+    value = np.dot(a,b)          
+    totalWeight = calc_weight(x) 
+    
+    if totalWeight > maxWeight:
+        value =  maxWeight - totalWeight
+
+    return value
+          
+       
+#function to create a 1-flip neighborhood of solution x         
+def neighborhood(x):
+        
+    nbrhood = []     
+    
+    for i in xrange(0,n):
+        nbrhood.append(x[:])
+        if nbrhood[i][i] == 1:
+            nbrhood[i][i] = 0
+        else:
+            nbrhood[i][i] = 1
+      
+    return nbrhood
+
+"""
+Then define functions for Tabu Search
+"""
+
+def get_neighbors(solution):
+    pass
+
+def get_candidate_moves(current):
+    #Find and return list of candidate moves, a subset of the neighborhood of current
+    pass
+    
+def min_cost_solution(solution_list):
+    #return the candidate in the list that returns the extended cost function
+    pass
+
+#adds new solution to the tabu memory and updates the tabu memory
+def update_tabu_memory(current):    
+
+    for key in memory.keys():
+        
+        #If the memory, is greater than 1, decrement the memory by 1
+        if memory[key] > 1:
+            memory[key] = memory[key] - 1
+        
+        #If the memory for the key equals 1, remove the key from the dictionary
+        else:
+            memory.pop(key) 
+    
+    # Make new solution tabu-active
+    memory[current] = tabu_tenure
+            
+
+while stopping_criterion:
+    candidate_moves = get_candidate_moves(current)
+    
+    current = min_cost_soution(candidate_moves)
+    
+    update_tabu_memory(current)
