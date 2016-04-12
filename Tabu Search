@@ -23,13 +23,15 @@ myPRNG = Random(seed)
 #initialize variables for general knapsack problem
 values = []
 weights = []
-current = create_random_instance(values, weights)
 n = 5
 
 #initialize tabu search settings
 stopping_criterion = True
 tabu_tenure = 5
 memory = {}
+
+Best_Solution = None
+Best_Value = None
 
 """
 Initialize Knapsack problem
@@ -81,7 +83,6 @@ def neighborhood(x):
 Then define functions for Tabu Search
 """
 #function to create a 1-flip neighborhood of solution x
-#and indicate whether the solution is tabu-active
 def get_neighbors(solution):
     nbrhood = []     
         
@@ -94,36 +95,47 @@ def get_neighbors(solution):
       
     return nbrhood    
 
-#Find and return list of candidate moves, a subset of the neighborhood of current
+#Find and return list of candidate moves, a subset of the neighborhood of current solution
+#returns a list of tuples, each tuple is structured as (Solution, Index Flipped)
 def get_candidate_moves(current):
     
     candidates = []     
         
     for i in xrange(0,n):
         if i not in memory.keys():
-            candidates.append(x[:])
-            if candidates[i][i] == 1:
-                candidates[i][i] = 0
+            candidates.append((x[:], i))
+            if candidates[len(candidates)-1][0][i] == 1:
+                candidates[len(candidates)-1][0][i] = 0
             else:
-                candidates[i][i] = 1
+                candidates[len(candidates)-1][0][i] = 1
       
     return candidates 
 
+
 #return the candidate in the list that returns the extended cost function
+#solution_list is a list of tuples structured as (Solution, Index Flipped)
 def min_cost_solution(solution_list):
-    bestsol = solution_list[0]
-    bestval = evaluate(solution_list[0])
     
+    #initialize values
+    bestsol = solution_list[0][0]
+    bestval = evaluate(solution_list[0][0])
+    flipped_index = 0
+    
+    #check for best solution
     for sol in solution_list:
-        val = evaluate(sol)
+        val = evaluate(sol[0])
         if val > bestval:
-            bestsol, bestval = sol, val
+            bestsol, bestval, flipped_index = sol[0], val, sol[1]
     
-    return bestsol
+    #check if new solution is better than the best solution found so far
+    if bestval > Best_Value:
+        Best_Solution, BestValue = bestsol, bestval
+    
+    return bestsol, flipped_index
 
 
-#adds new solution to the tabu memory and updates the tabu memory
-def update_tabu_memory(current):    
+#index of flipped position of the new solution to the tabu memory and updates the tabu memory
+def update_tabu_memory(current_flipped_index):    
 
     for key in memory.keys():
         
@@ -136,12 +148,29 @@ def update_tabu_memory(current):
             memory.pop(key) 
     
     # Make new solution tabu-active
-    memory[current] = tabu_tenure
-            
+    memory[current_flipped_index] = tabu_tenure
+
+
+
+"""
+Implement Tabu Search
+"""
+
+iterations = 0 #for stopping criterion
+
+current = create_random_instance(values, weights)
 
 while stopping_criterion:
-    candidate_moves = get_candidate_moves(current)
+    candidate_moves = get_candidate_moves(current) #list of tuples (Solution, flipped index)
     
-    current = min_cost_soution(candidate_moves)
+    current = min_cost_soution(candidate_moves) #tuple (Solution, flipped index)
     
-    update_tabu_memory(current)
+    update_tabu_memory(current[1])
+    
+    current = current[0] #extract list from current and assign to current
+    
+    #update stopping criterion if met
+    if iterations >= 100: #consider changing this criterion
+        stopping_criterion = False
+    else:
+        iterations += 1
