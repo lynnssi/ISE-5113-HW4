@@ -9,7 +9,7 @@ Selection of Candidate List::: From neighborhood that doesn't include tabu solut
 Evaluation Function:::
  Tabu Criterion: Whether an element in the index has been flipped
  Aspiration Criteria::  If a tabu solution encountered at the current iteration is better than the best solution found so far, then its tabu status is overridden 
- choice of tabu tenur:: 5
+ choice of tabu tenure:: 5
 
 """
 
@@ -24,6 +24,7 @@ myPRNG = Random(seed)
 values = []
 weights = []
 current = create_random_instance(values, weights)
+n = 5
 
 #initialize tabu search settings
 stopping_criterion = True
@@ -62,7 +63,7 @@ def evaluate(x):
     return value
           
        
-#function to create a 1-flip neighborhood of solution x         
+        
 def neighborhood(x):
         
     nbrhood = []     
@@ -79,17 +80,47 @@ def neighborhood(x):
 """
 Then define functions for Tabu Search
 """
-
+#function to create a 1-flip neighborhood of solution x
+#and indicate whether the solution is tabu-active
 def get_neighbors(solution):
-    pass
+    nbrhood = []     
+        
+    for i in xrange(0,n):
+        nbrhood.append(x[:])
+        if nbrhood[i][i] == 1:
+            nbrhood[i][i] = 0
+        else:
+            nbrhood[i][i] = 1
+      
+    return nbrhood    
 
+#Find and return list of candidate moves, a subset of the neighborhood of current
 def get_candidate_moves(current):
-    #Find and return list of candidate moves, a subset of the neighborhood of current
-    pass
     
+    candidates = []     
+        
+    for i in xrange(0,n):
+        if i not in memory.keys():
+            candidates.append(x[:])
+            if candidates[i][i] == 1:
+                candidates[i][i] = 0
+            else:
+                candidates[i][i] = 1
+      
+    return candidates 
+
+#return the candidate in the list that returns the extended cost function
 def min_cost_solution(solution_list):
-    #return the candidate in the list that returns the extended cost function
-    pass
+    bestsol = solution_list[0]
+    bestval = evaluate(solution_list[0])
+    
+    for sol in solution_list:
+        val = evaluate(sol)
+        if val > bestval:
+            bestsol, bestval = sol, val
+    
+    return bestsol
+
 
 #adds new solution to the tabu memory and updates the tabu memory
 def update_tabu_memory(current):    
