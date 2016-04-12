@@ -6,8 +6,8 @@ Define the following for the search
 Neighborhood::: Single-flip neighborhood
 Tabu Memory:::  Number of moves
 Selection of Candidate List::: From neighborhood that doesn't include tabu solutions
-Evaluation Function:::
- Tabu Criterion: Whether an element in the index has been flipped
+Evaluation Function::: knapsack weight. Negative values if it is greater than the max allowable weight. Same function used in localSearch1.py
+ Tabu Criterion: Whether an element at an index has been flipped
  Aspiration Criteria::  If a tabu solution encountered at the current iteration is better than the best solution found so far, then its tabu status is overridden 
  choice of tabu tenure:: 5
 
