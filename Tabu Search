@@ -24,7 +24,8 @@ myPRNG = Random(seed)
 #initialize variables for general knapsack problem
 values = []
 weights = []
-n = 5
+n = 10
+maxWeight = 4*n
 
 #initialize tabu search settings
 stopping_criterion = True
@@ -39,12 +40,24 @@ Initialize Knapsack problem
 Define standard functions for knapsack problem
 """
 
-def create_random_instance(values, weights):
+def create_random_instance():
+    #create values
     for i in xrange(0,n):
         values.append(myPRNG.randint(10,100))
         
+    #create weights
     for i in xrange(0,n):
         weights.append(myPRNG.randint(5,15))
+    
+    #initialize starting current solution
+    x_curr = []
+    
+    for i in xrange(0,n):              
+        if myPRNG.random() < 0.7:
+            x_curr.append(0)
+        else:
+            x_curr.append(1)   
+    return x_curr
     
 def calc_weight(x):
     a=np.array(x)
@@ -66,19 +79,7 @@ def evaluate(x):
     return value
           
        
-        
-def neighborhood(x):
-        
-    nbrhood = []     
-    
-    for i in xrange(0,n):
-        nbrhood.append(x[:])
-        if nbrhood[i][i] == 1:
-            nbrhood[i][i] = 0
-        else:
-            nbrhood[i][i] = 1
-      
-    return nbrhood
+
 
 """
 Then define functions for Tabu Search
@@ -88,7 +89,7 @@ def get_neighbors(solution):
     nbrhood = []     
         
     for i in xrange(0,n):
-        nbrhood.append(x[:])
+        nbrhood.append(solution[:])
         if nbrhood[i][i] == 1:
             nbrhood[i][i] = 0
         else:
@@ -104,11 +105,12 @@ def get_candidate_moves(current):
         
     for i in xrange(0,n):
         if i not in memory.keys():
-            candidates.append((x[:], i))
-            if candidates[len(candidates)-1][0][i] == 1:
-                candidates[len(candidates)-1][0][i] = 0
+            candidates.append((current[:], i))
+            lastIndex = len(candidates) - 1
+            if candidates[lastIndex][0][i] == 1:
+                candidates[lastIndex][0][i] = 0
             else:
-                candidates[len(candidates)-1][0][i] = 1
+                candidates[lastIndex][0][i] = 1
       
     return candidates 
 
@@ -127,10 +129,6 @@ def min_cost_solution(solution_list):
         val = evaluate(sol[0])
         if val > bestval:
             bestsol, bestval, flipped_index = sol[0], val, sol[1]
-    
-    #check if new solution is better than the best solution found so far
-    if bestval > Best_Value:
-        Best_Solution, BestValue = bestsol, bestval
     
     return bestsol, flipped_index
 
@@ -159,19 +157,27 @@ Implement Tabu Search
 
 iterations = 0 #for stopping criterion
 
-current = create_random_instance(values, weights)
+current = create_random_instance()
 
 while stopping_criterion:
     candidate_moves = get_candidate_moves(current) #list of tuples (Solution, flipped index)
     
-    current = min_cost_soution(candidate_moves) #tuple (Solution, flipped index)
+    current = min_cost_solution(candidate_moves) #tuple (Solution, flipped index)
     
     update_tabu_memory(current[1])
     
     current = current[0] #extract list from current and assign to current
     
+    #check if new solution is better than the best solution found so far
+    currentval = evaluate(current)
+    if currentval > Best_Value:
+        Best_Solution, Best_Value = current, currentval    
+    
     #update stopping criterion if met
-    if iterations >= 100: #consider changing this criterion
+    if iterations >= 1000: #consider changing this criterion
         stopping_criterion = False
     else:
         iterations += 1
+
+print "The best solution found is:", Best_Solution, "With value:", Best_Value
+print "The weight is:", calc_weight(Best_Solution)
