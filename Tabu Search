@@ -5,9 +5,10 @@ Define the following for the search
 
 Neighborhood::: Single-flip neighborhood
 Tabu Memory:::  Number of moves
+Long-term memory::: Frequency-based. Transition Measure. Number of times an item at index i has been flipped.
 Selection of Candidate List::: From neighborhood that doesn't include tabu solutions
 Evaluation Function::: knapsack weight. Negative values if it is greater than the max allowable weight. Same function used in localSearch1.py
- Tabu Criterion: Whether an element at an index has been flipped
+ Tabu Criterion: Whether an element at an index has been flipped. If the move is selecting an item to include in the solution, then any move trying to remove the same item is tabu for the duration of the tabu tenure • Similarly, an item thrown out is not allowed in for the duration of the tabu tenure iterations
  Aspiration Criteria::  If a tabu solution encountered at the current iteration is better than the best solution found so far, then its tabu status is overridden 
  choice of tabu tenure:: 5
  Stopping criterion: number of iterations...I would like to use something better
@@ -31,7 +32,12 @@ maxWeight = 4*n
 #initialize tabu search settings
 stopping_criterion = True
 tabu_tenure = 5
-memory = {}
+memory = {} #short-term memory
+frequency_memory = {} #Long-term frequency-based memory
+
+#initialize frequency memory
+for i in xrange(0, n):
+    frequency_memory[i] = 0
 
 Best_Solution = None
 Best_Value = None
@@ -135,6 +141,7 @@ def min_cost_solution(solution_list):
 #index of flipped position of the new solution to the tabu memory and updates the tabu memory
 def update_tabu_memory(current_flipped_index):    
 
+    #update short-term memory
     for key in memory.keys():
 
         #If the memory, is greater than 1, decrement the memory by 1
@@ -144,7 +151,10 @@ def update_tabu_memory(current_flipped_index):
         #If the memory for the key equals 1, remove the key from the dictionary
         else:
             memory.pop(key) 
-
+            
+    #update long-term frequency memory
+    frequency_memory[current_flipped_index] += 1
+    
     # Make new solution tabu-active
     memory[current_flipped_index] = tabu_tenure
 
