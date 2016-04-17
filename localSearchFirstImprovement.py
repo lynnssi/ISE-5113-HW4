@@ -92,6 +92,10 @@ done = 0
 x_best = x_curr[:]   #x_best will hold the best solution 
 f_curr = evaluate(x_curr)  #f_curr will hold the "fitness" of the current soluton 
 f_best = f_curr
+
+print "Starting Solution", x_curr
+print "Value of starting solution", f_curr
+print "Initial weight", calc_weight(x_curr)
     
 #g = open('localSearchResults.csv','w')    #optional: to write results out to a file
 
@@ -104,6 +108,7 @@ while done == 0:
         if evaluate(s) > f_best:   
             x_best = s[:]              #find the best member and keep track of that solution
             f_best = evaluate(s)       #and evaluation value
+            done = 1
             break                      #breaks out after first improvement found
             
     if f_best == f_curr:               #if there were no improving solutions in the neighborhood
