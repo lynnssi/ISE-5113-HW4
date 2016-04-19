@@ -112,6 +112,7 @@ for randomRestart in xrange(randRestart):
             if evaluate(s) > f_best:   
                 x_best = s[:]              #find the best member and keep track of that solution
                 f_best = evaluate(s)       #and evaluation value
+                done=1
                 break                      #first improvement used!
                 
         if f_best == f_curr:               #if there were no improving solutions in the neighborhood
