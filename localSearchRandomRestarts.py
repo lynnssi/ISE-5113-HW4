@@ -62,13 +62,17 @@ def neighborhood(x):
     return nbrhood
           
 #number of elements in a solution
-n = 100
+n = 500
 
 #define max weight for the knapsack
 maxWeight = 4*n
 
 #monitor the number of solutions evaluated
 solutionsChecked = 0
+
+#monitor global optimal solution
+global_bestSol = []
+global_bestVal = 0
       
 #initialize values and weights
 values = []
@@ -76,7 +80,7 @@ weights = []
 create_random_instance(values, weights)
 
 #random restart variable
-randRestart = 3
+randRestart = 50
 
 #random restart loop
 for randomRestart in xrange(randRestart):
@@ -115,9 +119,20 @@ for randomRestart in xrange(randRestart):
         else:
             x_curr = x_best[:]         #else: move to the neighbor solution and continue
             f_curr = f_best            #evalute the current solution
-            
-    print "\nFinal: Total number of solutions checked: ", solutionsChecked
+    
+    if f_best > global_bestVal:
+        global_bestVal = f_best
+        global_bestSol = list(x_best)
+        restartNum = randomRestart + 1
+        
+    print "\nFinal Restart Number: ", randomRestart + 1    
+    print "Total number of solutions checked: ", solutionsChecked
     print "Best value found: ", f_best
     print "Weight of knapsack: ", calc_weight(x_best)
     print "Best solution: ", x_best
-    print "Final Restart Number: ", randomRestart + 1
+    
+    
+print "\nBest solution found after restart #", restartNum
+print "Best value found across all iterations:", global_bestVal
+print "Weight of knapsack:", calc_weight(global_bestSol)
+print "Best solution found across all iterations:", global_bestSol
