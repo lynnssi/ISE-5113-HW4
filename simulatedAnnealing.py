@@ -74,6 +74,7 @@ maxWeight = 4*n
 
 #monitor the number of solutions evaluated
 solutionsChecked = 0
+totalNumIterations = 0
       
 #initialize values and weights
 values = []
@@ -113,6 +114,7 @@ for k in range(1, maxLength+1):
     #where the temp gets set again, and the process continues for each temp value
     while counter < tempLength:
         c = myPRNG.choice(Neighborhood)
+        totalNumIterations = totalNumIterations + 1
         
         if evaluate(c) > f_best:   
             x_best = c[:]              #find the best member and keep track of that solution
