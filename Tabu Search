@@ -1,18 +1,6 @@
 """
 Tabu Search
 
-Define the following for the search 
-
-Neighborhood::: Single-flip neighborhood
-Tabu Memory:::  Number of moves
-Long-term memory::: Frequency-based. Transition Measure. Number of times an item at index i has been flipped.
-Selection of Candidate List::: From neighborhood that doesn't include tabu solutions
-Evaluation Function::: knapsack weight. Negative values if it is greater than the max allowable weight. Same function used in localSearch1.py
- Tabu Criterion: Whether an element at an index has been flipped. If the move is selecting an item to include in the solution, then any move trying to remove the same item is tabu for the duration of the tabu tenure • Similarly, an item thrown out is not allowed in for the duration of the tabu tenure iterations
- Aspiration Criteria::  If a tabu solution encountered at the current iteration is better than the best solution found so far, then its tabu status is overridden 
- choice of tabu tenure:: 5
- Stopping criterion: number of iterations...I would like to use something better
-
 """
 
 import copy
@@ -26,12 +14,12 @@ myPRNG = Random(seed)
 values = []
 weights = []
 
-n = 100
+n = 500
 maxWeight = 4*n
 
 #initialize tabu search settings
 stopping_criterion = True
-tabu_tenure = 5
+tabu_tenure = 10
 memory = {} #short-term memory
 frequency_memory = {} #Long-term frequency-based memory
 
@@ -163,7 +151,8 @@ def update_tabu_memory(current_flipped_index):
 Implement Tabu Search
 """
 
-iterations = 0 #for stopping criterion
+iterations = 1 #tally number of iterations
+MAX_iterations = 1000 #Max number of iterations
 current = create_random_instance()
 
 while stopping_criterion: 
@@ -178,7 +167,7 @@ while stopping_criterion:
         Best_Solution, Best_Value = current, currentval    
 
     #update stopping criterion if met
-    if iterations >= 50:              #changed to 50, which outputs correct values and increases speed
+    if iterations >= MAX_iterations:              
         stopping_criterion = False
     else:
         iterations += 1
