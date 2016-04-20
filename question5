@@ -35,7 +35,7 @@ myPRNG = Random(seed)
 values = []
 weights = []
 
-n = 100
+n = 500
 maxWeight = 4*n
 
 #initialize tabu search settings
