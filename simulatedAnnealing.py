@@ -62,12 +62,12 @@ def boltzmann(initialTemp, k):
     return temp
 
 #random variables set by programmer needed for simulated annealing 
-initialTemp = 600
+initialTemp = 100
 tempLength = 15
-maxLength = 300
+maxLength = 30
 
 #number of elements in a solution
-n = 100
+n = 500
 
 #define max weight for the knapsack
 maxWeight = 4*n
