@@ -63,8 +63,8 @@ def boltzmann(initialTemp, k):
 
 #random variables set by programmer needed for simulated annealing 
 initialTemp = 100
-tempLength = 15
-maxLength = 30
+tempLength = 30
+maxLength = 60
 
 #number of elements in a solution
 n = 500
