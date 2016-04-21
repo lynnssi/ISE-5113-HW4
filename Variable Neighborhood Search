@@ -15,6 +15,7 @@ import copy
 from random import Random
 import numpy as np
 import itertools
+import time
 
 #to setup a random number generator, we will specify a "seed" value
 seed = 12345
@@ -29,10 +30,7 @@ maxWeight = 4*n
 #monitor the number of solutions evaluated
 solutionsChecked = 0
       
-#initialize values and weights
-values = []
-weights = []
-create_random_instance(values, weights)
+
 
 #define the solution variables
 x_curr = [] #x_curr will hold the current solution 
@@ -98,7 +96,7 @@ def double_flip_neighborhood(x):
             nbrhood[i][i] = 1
         
         #flip second index if within range
-        if i < len(x):
+        if i < len(x) - 1:
             if nbrhood[i][i+1] == 1:
                 nbrhood[i][i+1] = 0
             else:
@@ -132,12 +130,14 @@ def swap_neighborhood(x):
       
     return nbrhood    
 
-
+#initialize values and weights
+values = []
+weights = []
+create_random_instance(values, weights)
 
 #start with a random solution
 for i in xrange(0,n):
-    #x_curr.append(myPRNG.randint(0,1))
-    
+        
     if myPRNG.random() < 0.7:
         x_curr.append(0)
     else:
@@ -151,6 +151,9 @@ f_curr = evaluate(x_curr)  #f_curr will hold the "fitness" of the current soluto
 f_best = f_curr
 
 kMax = 3
+
+startTime = time.time()
+timeLimit = 60 #seconds
     
 while done == 0:
      
@@ -161,21 +164,21 @@ while done == 0:
         #"shaking": get random solution in Nk(current)  
         #"local search for local optima:" Then find the local optimum solution using the neighborhood
         if k == 1:
-            s = myPRNG.choice(one_flip_neighborhood(current))
+            s = myPRNG.choice(one_flip_neighborhood(x_curr))
             
             Neighborhood = one_flip_neighborhood(s)
         
         if k == 2:
-            s = myPRNG.choice(double_flip_neighborhood(current))
+            s = myPRNG.choice(double_flip_neighborhood(x_curr))
             
             
             Neighborhood = double_flip_neighborhood(s)
         if k == 3:
-            s = myPRNG.choice(swap_neighborhood(current))
+            s = myPRNG.choice(swap_neighborhood(x_curr))
             
             Neighborhood = swap_neighborhood(s)
       
-        
+        #local search on solution s
         s_star = None
         s_starVal = None
         for sol in Neighborhood:            
@@ -183,15 +186,24 @@ while done == 0:
             if evaluate(sol) > s_starVal:   
                 s_star = sol[:]              #find the best member and keep track of that solution
                 s_starVal = evaluate(sol)       #and evaluation value            
-                
-        if f_best == f_curr:               #if there were no improving solutions in the neighborhood
-            done = 1
+        
+        #compare to current solution
+        if s_starVal > f_curr:
+            x_curr, f_curr = s_star, s_starVal
+            k = 1
         else:
-            print "\nTotal number of solutions checked: ", solutionsChecked
-            print "Best value found: ", f_best
-            print "Best solution: ", x_best        
-            x_curr = x_best[:]         #else: move to the neighbor solution and continue
-            f_curr = f_best            #evalute the current solution
+            k += 1
+               
+            
+    if time.time() - startTime > timeLimit:               #if there were no improving solutions in the neighborhood
+        done = 1
+    else:
+        x_best[:] = x_curr         #else: move to the neighbor solution and continue
+        f_best = f_curr            #evalute the current solution        
+        print "\nTotal number of solutions checked: ", solutionsChecked
+        print "Best value found: ", f_best
+        print "Best solution: ", x_best        
+        
             
     
 print "\nFinal: Total number of solutions checked: ", solutionsChecked
