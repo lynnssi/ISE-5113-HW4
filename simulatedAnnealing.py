@@ -135,6 +135,7 @@ for k in range(1, maxLength+1):
         print "Current Temperature %.2f" % temp      
         # increase counter by one
         counter = counter + 1
+        solutionsChecked += 1
 
 print "\nWeight of knapsack: ", calc_weight(x_best)
 print "Best value found: ", f_best
@@ -142,3 +143,4 @@ print "Best solution: ", x_best
 print "Total Count: ", counter      #this should equal the tempLength variable
 print "tempLength: ", tempLength    #this should equal the counter variable
 print "Final Temperature %.2f" % temp 
+print "Solutions Checked", solutionsChecked
