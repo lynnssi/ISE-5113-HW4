@@ -55,14 +55,14 @@ def neighborhood(x):
     
     return nbrhood
           
-#boltzmann schedule
+#boltzmann cooling schedule
 def boltzmann(initialTemp, k):
     temp = initialTemp / math.log(1+k, 10)
     
     return temp
 
 #random variables set by programmer needed for simulated annealing 
-initialTemp = 100
+initialTemp = 100   
 tempLength = 30
 maxLength = 60
 
@@ -100,7 +100,7 @@ x_best = x_curr[:]   #x_best will hold the best solution
 f_curr = evaluate(x_curr)  #f_curr will hold the "fitness" of the current soluton 
 f_best = f_curr
     
-#simulated annealing loop
+#simulated annealing loop (stopping criterion is the max length)
 for k in range(1, maxLength+1):
     #counter variable 
     counter = 0
@@ -124,7 +124,9 @@ for k in range(1, maxLength+1):
             #objective values difference
             change = evaluate(x_curr) - evaluate(c)
             
-            if math.exp(-1*change/temp):   #from lecture 17, slide 42
+            epsilon = myPRNG.uniform(0,1)
+            
+            if epsilon <= math.exp(-1*change/temp):   #from lecture 17, slide 494
                 x_curr = x_best[:]         #else: move to the neighbor solution and continue
                 f_curr = f_best            #evaluate the current solution
         
