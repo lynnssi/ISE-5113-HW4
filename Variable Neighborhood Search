@@ -20,9 +20,22 @@ import itertools
 seed = 12345
 myPRNG = Random(seed)
 
-#to get a random number between 0 and 1, write call this:             myPRNG.random()
-#to get a random number between lwrBnd and upprBnd, write call this:  myPRNG.uniform(lwrBnd,upprBnd)
-#to get a random integer between lwrBnd and upprBnd, write call this: myPRNG.randint(lwrBnd,upprBnd)
+#number of elements in a solution
+n = 500
+
+#define max weight for the knapsack
+maxWeight = 4*n
+
+#monitor the number of solutions evaluated
+solutionsChecked = 0
+      
+#initialize values and weights
+values = []
+weights = []
+create_random_instance(values, weights)
+
+#define the solution variables
+x_curr = [] #x_curr will hold the current solution 
 
 
 #let's create an instance for the knapsack problem
@@ -119,22 +132,7 @@ def swap_neighborhood(x):
       
     return nbrhood    
 
-#number of elements in a solution
-n = 500
 
-#define max weight for the knapsack
-maxWeight = 4*n
-
-#monitor the number of solutions evaluated
-solutionsChecked = 0
-      
-#initialize values and weights
-values = []
-weights = []
-create_random_instance(values, weights)
-
-#define the solution variables
-x_curr = [] #x_curr will hold the current solution 
 
 #start with a random solution
 for i in xrange(0,n):
@@ -166,45 +164,26 @@ while done == 0:
             s = myPRNG.choice(one_flip_neighborhood(current))
             
             Neighborhood = one_flip_neighborhood(s)
-            s_star = None
-            s_starVal = None
-            for sol in Neighborhood:            
-                solutionsChecked = solutionsChecked + 1
-                if evaluate(sol) > s_starVal:   
-                    s_star = sol[:]              #find the best member and keep track of that solution
-                    s_starVal = evaluate(sol)       #and evaluation value            
+        
         if k == 2:
             s = myPRNG.choice(double_flip_neighborhood(current))
             
             
             Neighborhood = double_flip_neighborhood(s)
-            s_star = None
-            s_starVal = None
-            for sol in Neighborhood:            
-                solutionsChecked = solutionsChecked + 1
-                if evaluate(sol) > s_starVal:   
-                    s_star = sol[:]              #find the best member and keep track of that solution
-                    s_starVal = evaluate(sol)       #and evaluation value             
         if k == 3:
             s = myPRNG.choice(swap_neighborhood(current))
             
             Neighborhood = swap_neighborhood(s)
-            s_star = None
-            s_starVal = None
-            for sol in Neighborhood:            
-                solutionsChecked = solutionsChecked + 1
-                if evaluate(sol) > s_starVal:   
-                    s_star = sol[:]              #find the best member and keep track of that solution
-                    s_starVal = evaluate(sol)       #and evaluation value             
+      
         
-        
-        
-        for s in Neighborhood:             #evaluate every member in the neighborhood of x_curr
+        s_star = None
+        s_starVal = None
+        for sol in Neighborhood:            
             solutionsChecked = solutionsChecked + 1
-            if evaluate(s) > f_best:   
-                x_best = s[:]              #find the best member and keep track of that solution
-                f_best = evaluate(s)       #and evaluation value
-        
+            if evaluate(sol) > s_starVal:   
+                s_star = sol[:]              #find the best member and keep track of that solution
+                s_starVal = evaluate(sol)       #and evaluation value            
+                
         if f_best == f_curr:               #if there were no improving solutions in the neighborhood
             done = 1
         else:
