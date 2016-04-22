@@ -6,6 +6,7 @@ Tabu Search
 import copy
 from random import Random
 import numpy as np
+import time
 
 seed = 12345
 myPRNG = Random(seed)
@@ -184,11 +185,6 @@ with Path Relinking
 
 Inf = 100000000000 #simulate infinity
 
-iterations = 1 #tally number of iterations
-MAX_iterations = 1000 #Max number of iterations
-relink_iteration = 1 #tally number of iterations between relinking
-maxRelinkIt = 50    #Max number of iterations between relinking
-
 Best_Solution = None  #global best solution
 Best_Value = None     #value of global best solution
 
@@ -196,6 +192,12 @@ bestSol_currIt = None #best solution of the current iteration
 bestVal_currIt = None #value of best solution of the current iteration
 worstSol_currIt = None #worst solution of the current iteration
 worstVal_currIt = Inf #value of worst solution of the current iteration
+
+iterations = 1 #tally number of iterations
+relink_iteration = 1 #tally number of iterations between relinking
+maxRelinkIt = 100    #Max number of iterations between relinking
+startTime = time.time()
+timeLimit = 120
 
 current = create_random_instance()
 
@@ -218,7 +220,7 @@ while stopping_criterion:
         worstSol_currIt, worstVal_currIt = current, currentval    
     
     #Path-Relinking
-    if relink_iteration >= maxRelinkIt:# and iterations >= MAX_iterations/2:
+    if relink_iteration >= maxRelinkIt and time.time() - startTime > timeLimit/2:
         
         newSol = worstSol_currIt
         newVal = worstVal_currIt
@@ -229,6 +231,8 @@ while stopping_criterion:
         
         #while the initiating solution (newSol) and the guiding solution(bestSol) are different, continue the loop
         while same_solution(newSol, bestSol_currIt) == False:
+            
+            #delta(x,y)
             #evaluate all 1-flip moves from the initiating solution to the guiding solution
             relinkMoves = get_path_relink_moves(newSol, bestSol_currIt)
             
@@ -253,7 +257,7 @@ while stopping_criterion:
         relink_iteration += 1
     
     #update stopping criterion if met
-    if iterations >= MAX_iterations:              
+    if time.time() - startTime > timeLimit:              
         stopping_criterion = False
     else:
         iterations += 1
